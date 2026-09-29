@@ -1,3 +1,70 @@
+# Tuxedo Drivers - Suporte a Teclado RGB para Avell Storm 560
+
+Modificação (patch) do driver oficial da TUXEDO Computers para viabilizar o controle de retroiluminação RGB e os atalhos físicos do teclado no notebook **Avell Storm 560** (chassi Tongfang/Uniwill) em distribuições Linux (Linux Mint, Ubuntu e derivados).
+
+---
+
+## ⚠️ AVISO LEGAL E ISENÇÃO DE RESPONSABILIDADE (DISCLAIMER)
+
+> **LEIA COM ATENÇÃO:**
+>
+> 1. **SEM VÍNCULO OU SUPORTE OFICIAL:** Este repositório é uma iniciativa independente e de código aberto. Não possui qualquer vínculo comercial, chancela ou suporte por parte da **Avell High Performance** ou da **TUXEDO Computers GmbH**.
+> 2. **ISENÇÃO TOTAL DE RESPONSABILIDADE:** Este código foi adaptado e testado exclusivamente no hardware de desenvolvimento do autor (**Avell Storm 560**, AMD Ryzen 7, NVIDIA RTX 5060, rodando Linux Mint). O autor **NÃO SE RESPONSABILIZA** por quaisquer danos diretos, indiretos, falhas no sistema operacional, instabilidades, congelamentos, queima de componentes ou perda de garantia decorrentes do uso, instalação ou modificação destes drivers em qualquer equipamento.
+> 3. **USO POR SUA CONTA E RISCO:** Todo e qualquer procedimento aqui descrito deve ser realizado por usuários conscientes dos riscos técnicos de compilar e carregar módulos modificados diretamente no kernel do Linux.
+
+---
+
+## 📌 O que foi modificado?
+
+- **Roteamento de GUID WMI:** Redirecionamento das chamadas da controladora WMI para o identificador `UNIWILL_WMI_MGMT_GUID_BA` (`ABBC0F6D-8EA1-11D1-00A0-C90629100000`), utilizado pela BIOS da Avell.
+- **Tratamento de Retorno ACPI:** Suporte a retornos do tipo `ACPI_TYPE_INTEGER` nas avaliações do Embedded Controller (EC).
+- **Liberação de Interface de LEDs:** Bypass de checagens exclusivas de BIOS Tuxedo e ativação de perfil de iluminação RGB de 1 zona (`rgb:kbd_backlight`).
+- **Build seguro:** Correção no Makefile (`CURDIR`) para evitar erros de compilação ao rodar sob privilégios de `sudo`.
+
+---
+
+## 🚀 Como Compilar e Instalar
+
+### Pré-requisitos
+```bash
+sudo apt update
+sudo apt install build-essential git dkms linux-headers-$(uname -r)
+```
+
+Instalação
+Bash
+# Compilar os módulos
+make clean && make
+
+# Instalar no sistema
+sudo make install
+sudo depmod -a
+
+# Carregar os drivers no kernel
+sudo modprobe tuxedo_keyboard
+sudo modprobe uniwill_wmi
+⌨️ Atalhos de Hardware Ativos (Avell Storm 560)
+Com o driver carregado, o teclado passa a responder pelos seguintes atalhos físicos no teclado numérico:
+
+Fn + /: Alternar entre as cores RGB (Vermelho, Verde, Azul, Amarelo, Magenta, Ciano, Branco).
+
+Fn + *: Ligar / Desligar a iluminação.
+
+Fn + + / Fn + -: Aumentar / Diminuir o brilho do teclado.
+
+Controle manual via sysfs:
+
+Bash
+# Brilho máximo:
+echo 255 | sudo tee /sys/class/leds/rgb:kbd_backlight/brightness
+
+# Definir cor branca (R G B):
+echo "255 255 255" | sudo tee /sys/class/leds/rgb:kbd_backlight/multi_intensity
+
+
+## README ORIGIN
+
+
 # Table of Content
 - <a href="#description">Description</a>
 - <a href="#building-and-install">Building and Install</a>
