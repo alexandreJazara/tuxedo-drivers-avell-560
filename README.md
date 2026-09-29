@@ -61,8 +61,40 @@ echo 255 | sudo tee /sys/class/leds/rgb:kbd_backlight/brightness
 # Definir cor branca (R G B):
 echo "255 255 255" | sudo tee /sys/class/leds/rgb:kbd_backlight/multi_intensity
 
+---
 
-## README ORIGIN
+## ⚙️ Observações Importantes e Pós-Instalação
+
+### 1. Secure Boot Desativado na BIOS
+Como estes módulos do kernel são compilados manualmente (*out-of-tree*) e não possuem assinaturas digitais da Canonical/Microsoft, o **Secure Boot deve estar desativado** na BIOS do equipamento[cite: 1]. Se o Secure Boot permanecer ativado, o Linux bloqueará o carregamento dos drivers por política de segurança[cite: 1].
+* **Como desativar:** Reinicie o computador, pressione `F2` repetidamente para acessar a BIOS, localize a opção **Secure Boot** (na aba *Security* ou *Boot*), mude para **Disabled** e pressione `F10` para salvar e sair[cite: 1].
+
+### 2. Carregamento Automático na Inicialização
+Por padrão, após a instalação, os módulos podem não carregar sozinhos no boot do sistema operacional. Para garantir que o teclado e os atalhos sejam inicializados automaticamente ao ligar o notebook (sem precisar rodar `modprobe` no terminal), configure a inicialização automática com o comando:
+
+```bash
+echo -e "tuxedo_keyboard\nuniwill_wmi" | sudo tee /etc/modules-load.d/avell-rgb.conf
+``` 
+---
+
+3. Atualizações Futuras do Kernel Linux
+Módulos de kernel ficam atrelados à versão exata do kernel em que foram construídos. Caso o gerenciador de atualizações da sua distribuição instale uma nova versão do Kernel Linux:
+
+Abra a pasta do repositório no terminal:
+
+Bash
+cd ~/tuxedo-drivers
+Recompile e reinstale para a nova versão:
+
+Bash
+make clean && make
+sudo make install
+sudo depmod -a
+Reinicie o notebook para carregar os módulos sob o novo kernel.
+
+---
+
+# README ORIGIN
 
 
 # Table of Content
